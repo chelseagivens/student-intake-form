@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Enrollment Form</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <form id="enrollmentForm">
+    <h2>Student Enrollment Form</h2>
+    <label>Last Name</label><input type="text" name="lastName" required>
+    <label>First Name</label><input type="text" name="firstName" required>
+    <label>Date of Birth</label><input type="date" name="dob" required>
+    <label>Grade</label>
+    <select name="grade" required>
+      <option value="">Select Grade</option>
+      <option>K</option><option>1</option><option>2</option>
+      <option>3</option><option>4</option><option>5</option>
+    </select>
+    <label>Student ID</label><input type="text" name="studentId" required>
+    <label>Gender</label>
+    <select name="gender" required>
+      <option value="">Select Gender</option>
+      <option>M</option><option>F</option>
+    </select>
+    <label>Language Indicated</label><input type="text" name="languageIndicated">
+
+    <label>Previous District</label>
+    <select name="previousDistrict" id="previousDistrict" onchange="updateSchools()" required>
+      <option value="">Select District</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <label>Previous School</label>
+    <select name="previousSchool" id="previousSchool" required disabled>
+      <option value="">Select School</option>
+    </select>
+
+    <label>Special Programs</label>
+    <div class="checkboxes">
+      <label><input type="checkbox" name="specialPrograms" value="DYS"> DYS</label>
+      <label><input type="checkbox" name="specialPrograms" value="GT"> GT</label>
+      <label><input type="checkbox" name="specialPrograms" value="SPED"> SPED</label>
+      <label><input type="checkbox" name="specialPrograms" value="504"> 504</label>
+      <label><input type="checkbox" name="specialPrograms" value="RES"> RES</label>
+      <label><input type="checkbox" name="specialPrograms" value="SPEECH"> SPEECH</label>
+      <label><input type="checkbox" name="specialPrograms" value="EB"> EB</label>
+    </div>
+    <label>Is Student New to Texas?</label>
+    <select name="newToTexas" id="newToTexas" onchange="toggleHLS()" required>
+      <option value="">Select an option</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+    <div id="hlsField" style="display:none;">
+      <label>Has HLS Been Completed?</label>
+      <select name="hlsCompleted">
+        <option value="">Select an option</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+    </div>
+    <button type="submit">Submit Enrollment</button>
+  </form>
+  <script>
+    const districtSchools = {
+  "ALLEN ISD": [
+    "PAT DILLARD SPECIAL ACHIEVEMENT CENTER",
+    "ALTON BOYD EL",
+    "GENE M REED EL",
+    "ALVIS C STORY EL",
+    "MAX O VAUGHAN EL",
+    "FLOSSIE FLOYD GREEN EL",
+    "FRANCES E NORTON EL",
+    "BOLIN EL",
+    "KERR EL",
+    "JAMES AND MARGIE MARION EL",
+    "DR E T BOON EL",
+    "CARLENA CHANDLER EL",
+    "MARY EVANS EL",
+    "DAVID AND LYNDA OLSON EL",
+    "BEVERLY CHEATHAM EL",
+    "LOIS LINDSEY EL",
+    "JENNY PRESTON EL"
+  ],
+  "ANNA ISD": [
+    "JOE K BRYANT EL",
+    "SUE EVELYN RATTAN EL",
+    "JUDITH L HARLOW EL",
+    "ROSAMOND-SHERLEY EL"
+  ],
+  "CELINA ISD": [
+    "MARCY B LYKINS EL",
+    "O'DELL EL",
+    "BOBBY RAY & AFTON MARTIN EL",
+    "TOMMIE DOBIE BOTHWELL EL"
+  ],
+  "FARMERSVILLE ISD": [
+    "TATUM EL",
+    "FARMERSVILLE INT"
+  ],
+  "FRISCO ISD": [
+    "WORTHAM INT",
+    "ROGERS EL",
+    "CURTSINGER EL",
+    "SMITH EL",
+    "ANDERSON EL",
+    "CHRISTIE EL",
+    "FISHER EL",
+    "BRIGHT ACAD",
+    "BORCHARDT EL",
+    "SHAWNEE TRAIL EL",
+    "SPEARS EL",
+    "SPARKS EL",
+    "GUNSTREAM EL",
+    "RIDDLE EL",
+    "BOALS EL",
+    "ISBELL EL",
+    "PINK EL",
+    "BLEDSOE EL",
+    "ASHLEY EL",
+    "OGLE EL",
+    "CORBELL EL",
+    "SEM EL",
+    "TAYLOR EL",
+    "MOONEYHAM EL",
+    "ROBERTSON EL",
+    "ELLIOTT EL",
+    "CARROLL EL",
+    "TADLOCK EL",
+    "ALLEN EL",
+    "SONNTAG EL",
+    "PUREFOY EL",
+    "COMSTOCK EL",
+    "PHILLIPS EL",
+    "NICHOLS EL",
+    "NEWMAN EL",
+    "SCOTT EL",
+    "MCSPEDDEN EL",
+    "HOSP EL",
+    "NORRIS EL",
+    "MILLER EL",
+    "VAUGHN EL",
+    "TALLEY EL",
+    "LISCANO EL",
+    "MINETT EL"
+  ],
+  "MCKINNEY ISD": [
+    "FINCH EL",
+    "WEBB EL",
+    "BURKS EL",
+    "CALDWELL EL",
+    "VALLEY CREEK EL",
+    "GLEN OAKS EL",
+    "SLAUGHTER EL",
+    "REUBEN JOHNSON EL",
+    "C T EDDINS EL",
+    "ROY LEE WALKER EL",
+    "EARL & LOTTIE WOLFORD EL",
+    "ARTHUR H MCNEIL EL",
+    "ALBERT & IOLA LEE DAVIS MALVERN EL",
+    "JOSE DE JESUS AND MARIA LUISA VEGA EL",
+    "DEAN AND MILDRED BENNETT EL",
+    "GARY AND BOBBYE JACK MINSHEW EL",
+    "J B WILMETH EL",
+    "JESSE MCGOWEN EL",
+    "NAOMI PRESS EL",
+    "LIZZIE NELL CUNDIFF MCCLURE EL",
+    "RUTH AND HAROLD FRAZIER EL"
+  ],
+  "MELISSA ISD": [
+    "HARRY MCKILLOP EL",
+    "NORTH CREEK EL",
+    "WILLOW WOOD EL",
+    "SUMEER ELEMEMTARY"
+  ],
+  "PLANO ISD": [
+    "JACKSON EL",
+    "MEADOWS EL",
+    "MENDENHALL EL",
+    "SIGLER EL",
+    "MEMORIAL EL",
+    "ALDRIDGE EL",
+    "SHEPARD EL",
+    "FORMAN EL",
+    "DAVIS EL",
+    "CHRISTIE EL",
+    "WEATHERFORD EL",
+    "HUGHSTON EL",
+    "SAIGLING EL",
+    "WELLS EL",
+    "THOMAS EL",
+    "HARRINGTON EL",
+    "DOOLEY EL",
+    "HUFFMAN EL",
+    "CARLISLE EL",
+    "MATHEWS EL",
+    "BRINKER EL",
+    "DAFFRON EL",
+    "HEDGCOXE EL",
+    "MITCHELL EL",
+    "RASOR EL",
+    "BETHANY EL",
+    "GULLEDGE EL",
+    "HAGGAR EL",
+    "MILLER EL",
+    "BARKSDALE EL",
+    "SKAGGS EL",
+    "HAUN EL",
+    "MCCALL EL",
+    "BEVERLY EL",
+    "HIGHTOWER EL",
+    "STINSON EL",
+    "ANDREWS EL",
+    "CENTENNIAL EL",
+    "BOGGESS EL",
+    "HICKEY EL",
+    "WYATT EL",
+    "HUNT EL",
+    "SCHELL EL",
+    "BARRON EL",
+    "BIRD EDUCATION CENTER",
+    "GUINN SPECIAL PROGRAMS CENTER"
+  ],
+  "PRINCETON ISD": [
+    "LACY EL",
+    "GODWIN EL",
+    "HARPER EL",
+    "SMITH EL",
+    "LOWE EL",
+    "MAYFIELD EL",
+    "GREEN EL",
+    "JAMES EL",
+    "PRINCETON DAEP"
+  ],
+  "PROSPER ISD": [
+    "PROSPER DAEP",
+    "R STEVE FOLSOM EL",
+    "JUDY RUCKER EL",
+    "JOHN A BAKER EL",
+    "CYNTHIA A COCKRELL EL",
+    "LIGHT FARMS EL",
+    "WINDSONG RANCH EL",
+    "JIM AND BETTY HUGHES EL",
+    "RALPH AND MARY LYNN BOYER EL",
+    "JIM SPRADLEY EL",
+    "JACK AND JUNE FURR EL",
+    "CHUCK AND CINDY STUBER EL",
+    "SAM JOHNSON EL",
+    "MIKE AND JANIE REEVES EL",
+    "MRS JERRY BRYANT EL",
+    "JOYCE HALL EL",
+    "LILYANA EL",
+    "DAN CHRISTIE EL",
+    "BETTY JACKSON EL"
+  ],
+  "WYLIE ISD": [
+    "AB HARRISON INT",
+    "DAVIS INT",
+    "DR AL DRAPER INTERMED",
+    "R F HARTMAN EL",
+    "T F BIRMINGHAM EL",
+    "P M AKIN EL",
+    "DODD EL",
+    "R V GROVES EL",
+    "CHERI COX EL",
+    "TIBBALS EL",
+    "RITA SMITH EL",
+    "DON WHITT EL",
+    "WALLY WATKINS EL",
+    "GEORGE W BUSH EL"
+  ],
+  "BLUE RIDGE ISD": [
+    "BLUE RIDGE EL"
+  ],
+  "COMMUNITY ISD": [
+    "MCCLENDON EL",
+    "NESMITH EL",
+    "JOHN & BARBARA RODERICK EL",
+    "MARY LOU DODSON EL",
+    "MILDRED B ELLIS EL"
+  ],
+  "LOVEJOY ISD": [
+    "SLOAN CREEK INT",
+    "JOE V HART EL",
+    "LOVEJOY DAEP",
+    "ROBERT L PUSTER EL"
+  ]
+};
+
+    function updateSchools() {
+      const district = document.getElementById("previousDistrict").value;
+      const schoolDropdown = document.getElementById("previousSchool");
+      schoolDropdown.innerHTML = '<option value="">Select School</option>';
+      if (districtSchools[district]) {
+        districtSchools[district].forEach(school => {
+          const opt = document.createElement("option");
+          opt.value = school;
+          opt.textContent = school;
+          schoolDropdown.appendChild(opt);
+        });
+      }
+    }
+  </script>
+  
+  <script>
+    const districtSchools = {
+  "ALLEN ISD": [
+    "PAT DILLARD SPECIAL ACHIEVEMENT CENTER",
+    "ALTON BOYD EL",
+    "GENE M REED EL",
+    "ALVIS C STORY EL",
+    "MAX O VAUGHAN EL",
+    "FLOSSIE FLOYD GREEN EL",
+    "FRANCES E NORTON EL",
+    "BOLIN EL",
+    "KERR EL",
+    "JAMES AND MARGIE MARION EL",
+    "DR E T BOON EL",
+    "CARLENA CHANDLER EL",
+    "MARY EVANS EL",
+    "DAVID AND LYNDA OLSON EL",
+    "BEVERLY CHEATHAM EL",
+    "LOIS LINDSEY EL",
+    "JENNY PRESTON EL"
+  ],
+  "ANNA ISD": [
+    "JOE K BRYANT EL",
+    "SUE EVELYN RATTAN EL",
+    "JUDITH L HARLOW EL",
+    "ROSAMOND-SHERLEY EL"
+  ],
+  "CELINA ISD": [
+    "MARCY B LYKINS EL",
+    "O'DELL EL",
+    "BOBBY RAY & AFTON MARTIN EL",
+    "TOMMIE DOBIE BOTHWELL EL"
+  ],
+  "FARMERSVILLE ISD": [
+    "TATUM EL",
+    "FARMERSVILLE INT"
+  ],
+  "FRISCO ISD": [
+    "WORTHAM INT",
+    "ROGERS EL",
+    "CURTSINGER EL",
+    "SMITH EL",
+    "ANDERSON EL",
+    "CHRISTIE EL",
+    "FISHER EL",
+    "BRIGHT ACAD",
+    "BORCHARDT EL",
+    "SHAWNEE TRAIL EL",
+    "SPEARS EL",
+    "SPARKS EL",
+    "GUNSTREAM EL",
+    "RIDDLE EL",
+    "BOALS EL",
+    "ISBELL EL",
+    "PINK EL",
+    "BLEDSOE EL",
+    "ASHLEY EL",
+    "OGLE EL",
+    "CORBELL EL",
+    "SEM EL",
+    "TAYLOR EL",
+    "MOONEYHAM EL",
+    "ROBERTSON EL",
+    "ELLIOTT EL",
+    "CARROLL EL",
+    "TADLOCK EL",
+    "ALLEN EL",
+    "SONNTAG EL",
+    "PUREFOY EL",
+    "COMSTOCK EL",
+    "PHILLIPS EL",
+    "NICHOLS EL",
+    "NEWMAN EL",
+    "SCOTT EL",
+    "MCSPEDDEN EL",
+    "HOSP EL",
+    "NORRIS EL",
+    "MILLER EL",
+    "VAUGHN EL",
+    "TALLEY EL",
+    "LISCANO EL",
+    "MINETT EL"
+  ],
+  "MCKINNEY ISD": [
+    "FINCH EL",
+    "WEBB EL",
+    "BURKS EL",
+    "CALDWELL EL",
+    "VALLEY CREEK EL",
+    "GLEN OAKS EL",
+    "SLAUGHTER EL",
+    "REUBEN JOHNSON EL",
+    "C T EDDINS EL",
+    "ROY LEE WALKER EL",
+    "EARL & LOTTIE WOLFORD EL",
+    "ARTHUR H MCNEIL EL",
+    "ALBERT & IOLA LEE DAVIS MALVERN EL",
+    "JOSE DE JESUS AND MARIA LUISA VEGA EL",
+    "DEAN AND MILDRED BENNETT EL",
+    "GARY AND BOBBYE JACK MINSHEW EL",
+    "J B WILMETH EL",
+    "JESSE MCGOWEN EL",
+    "NAOMI PRESS EL",
+    "LIZZIE NELL CUNDIFF MCCLURE EL",
+    "RUTH AND HAROLD FRAZIER EL"
+  ],
+  "MELISSA ISD": [
+    "HARRY MCKILLOP EL",
+    "NORTH CREEK EL",
+    "WILLOW WOOD EL",
+    "SUMEER ELEMEMTARY"
+  ],
+  "PLANO ISD": [
+    "JACKSON EL",
+    "MEADOWS EL",
+    "MENDENHALL EL",
+    "SIGLER EL",
+    "MEMORIAL EL",
+    "ALDRIDGE EL",
+    "SHEPARD EL",
+    "FORMAN EL",
+    "DAVIS EL",
+    "CHRISTIE EL",
+    "WEATHERFORD EL",
+    "HUGHSTON EL",
+    "SAIGLING EL",
+    "WELLS EL",
+    "THOMAS EL",
+    "HARRINGTON EL",
+    "DOOLEY EL",
+    "HUFFMAN EL",
+    "CARLISLE EL",
+    "MATHEWS EL",
+    "BRINKER EL",
+    "DAFFRON EL",
+    "HEDGCOXE EL",
+    "MITCHELL EL",
+    "RASOR EL",
+    "BETHANY EL",
+    "GULLEDGE EL",
+    "HAGGAR EL",
+    "MILLER EL",
+    "BARKSDALE EL",
+    "SKAGGS EL",
+    "HAUN EL",
+    "MCCALL EL",
+    "BEVERLY EL",
+    "HIGHTOWER EL",
+    "STINSON EL",
+    "ANDREWS EL",
+    "CENTENNIAL EL",
+    "BOGGESS EL",
+    "HICKEY EL",
+    "WYATT EL",
+    "HUNT EL",
+    "SCHELL EL",
+    "BARRON EL",
+    "BIRD EDUCATION CENTER",
+    "GUINN SPECIAL PROGRAMS CENTER"
+  ],
+  "PRINCETON ISD": [
+    "LACY EL",
+    "GODWIN EL",
+    "HARPER EL",
+    "SMITH EL",
+    "LOWE EL",
+    "MAYFIELD EL",
+    "GREEN EL",
+    "JAMES EL",
+    "PRINCETON DAEP"
+  ],
+  "PROSPER ISD": [
+    "PROSPER DAEP",
+    "R STEVE FOLSOM EL",
+    "JUDY RUCKER EL",
+    "JOHN A BAKER EL",
+    "CYNTHIA A COCKRELL EL",
+    "LIGHT FARMS EL",
+    "WINDSONG RANCH EL",
+    "JIM AND BETTY HUGHES EL",
+    "RALPH AND MARY LYNN BOYER EL",
+    "JIM SPRADLEY EL",
+    "JACK AND JUNE FURR EL",
+    "CHUCK AND CINDY STUBER EL",
+    "SAM JOHNSON EL",
+    "MIKE AND JANIE REEVES EL",
+    "MRS JERRY BRYANT EL",
+    "JOYCE HALL EL",
+    "LILYANA EL",
+    "DAN CHRISTIE EL",
+    "BETTY JACKSON EL"
+  ],
+  "WYLIE ISD": [
+    "AB HARRISON INT",
+    "DAVIS INT",
+    "DR AL DRAPER INTERMED",
+    "R F HARTMAN EL",
+    "T F BIRMINGHAM EL",
+    "P M AKIN EL",
+    "DODD EL",
+    "R V GROVES EL",
+    "CHERI COX EL",
+    "TIBBALS EL",
+    "RITA SMITH EL",
+    "DON WHITT EL",
+    "WALLY WATKINS EL",
+    "GEORGE W BUSH EL"
+  ],
+  "BLUE RIDGE ISD": [
+    "BLUE RIDGE EL"
+  ],
+  "COMMUNITY ISD": [
+    "MCCLENDON EL",
+    "NESMITH EL",
+    "JOHN & BARBARA RODERICK EL",
+    "MARY LOU DODSON EL",
+    "MILDRED B ELLIS EL"
+  ],
+  "LOVEJOY ISD": [
+    "SLOAN CREEK INT",
+    "JOE V HART EL",
+    "LOVEJOY DAEP",
+    "ROBERT L PUSTER EL"
+  ]
+};
+
+    function updateSchools() {
+      const district = document.getElementById("previousDistrict").value;
+      const schoolDropdown = document.getElementById("previousSchool");
+      schoolDropdown.innerHTML = '<option value="">Select School</option>';
+      if (district === "Other") {
+        schoolDropdown.outerHTML = '<input type="text" name="previousSchool" id="previousSchool" placeholder="Enter previous school" required>';
+      } else {
+        const newSelect = document.createElement("select");
+        newSelect.name = "previousSchool";
+        newSelect.id = "previousSchool";
+        newSelect.required = true;
+        newSelect.innerHTML = '<option value="">Select School</option>';
+        if (districtSchools[district]) {
+          districtSchools[district].forEach(school => {
+            const opt = document.createElement("option");
+            opt.value = school;
+            opt.textContent = school;
+            newSelect.appendChild(opt);
+          });
+        }
+        const oldField = document.querySelector("#previousSchool");
+        oldField.parentNode.replaceChild(newSelect, oldField);
+      }
+    }
+  </script>
+  <script src="script.js"></script>
+
+</body>
+</html>
